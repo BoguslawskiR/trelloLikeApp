@@ -5,7 +5,6 @@ import {
 import { TextField } from 'react-native-material-textfield';
 import * as _ from 'lodash';
 import { Icon } from 'react-native-elements'
-import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 
 
 export default class Header extends Component {
