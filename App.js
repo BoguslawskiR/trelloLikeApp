@@ -9,13 +9,14 @@ import {
   Platform,
   StyleSheet,
   Text,
-  View
+  View,
 } from 'react-native';
 import Login from './components/login';
 
 import { StackNavigator, AppNavigator } from 'react-navigation';
 import Table from './components/table';
 import Register from './components/register';
+import TaskDetails from './components/taskdetails';
 
 
 export default class App extends Component<{}> {
@@ -35,9 +36,12 @@ const ModalStack = StackNavigator({
   },
   Register: {
     screen: Register,
+  },
+  TaskDetails: {
+    screen: TaskDetails
   }
 },
   {
-    initialRouteName: 'Login',
+    initialRouteName: 'TaskDetails',
   }
 );
