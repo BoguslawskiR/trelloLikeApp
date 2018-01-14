@@ -50,14 +50,24 @@ export default class Name extends Component {
           />
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: 300, marginTop: 16 }}>
-          <Button title={'Register'} />
+          <Button title={'Register'} onPress={this.register.bind(this)} />
         </View>
       </View>
     );
   }
 
-  login() {
-    console.log('testttt');
-    this.props.navigation.navigate('Table')
+  register() {
+    fetch('https://mywebsite.com/endpoint/', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        firstParam: 'yourValue',
+        secondParam: 'yourOtherValue',
+      }),
+    });
+    this.props.navigation.navigate('Login')
   }
 }
