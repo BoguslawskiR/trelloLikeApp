@@ -6,7 +6,7 @@ import {
     View, Text, Button, StyleSheet, Image, DeviceEventEmitter, Platform, NativeModules, NativeEventEmitter, Alert
 } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
-import { serverURL } from 'shares';
+import { serverURL } from './shares';
 
 import * as _ from 'lodash';
 
@@ -50,12 +50,12 @@ export default class TaskDetails extends Component {
         header: null
     });
 
-    componentDidMount() {
+    componentWillMount() {
         let tableId = this.props.navigation.state.params.tableId;
         let listsId = this.props.navigation.state.params.listId;
         let taskId = this.props.navigation.state.params.taskId;
 
-        fetch(serverURL + `boards/${tableId}/lists/${listsId}/tasks/${taskId}`,
+        fetch(`${serverURL}/boards/${tableId}/lists/${listsId}/tasks/${taskId}`,
             {
                 type: 'GET',
                 headers: {
@@ -63,12 +63,12 @@ export default class TaskDetails extends Component {
                     'Content-Type': 'application/json',
                     'Authorization': `JWT ${this.props.navigation.state.params.token}`
                 }
-            }.then((res) => res.json())
+            }).then((res) => res.json())
                 .then((jsonTask) => {
                     let taskObj = jsonTask;
                     this.setState({task: taskObj})
                 })
-        );
+
 
         console.log('test', this.props);
         console.log('test', this.state);
