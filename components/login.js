@@ -5,7 +5,7 @@ import {
 import { TextField } from 'react-native-material-textfield';
 
 import * as _ from 'lodash';
-
+import Header from './header';
 export default class Login extends Component {
 
   state = {
@@ -52,8 +52,24 @@ export default class Login extends Component {
   }
 
   login() {
-    console.log('testttt');
-    this.props.navigation.navigate('Table')
+    console.log('TEST');
+    fetch('http://192.168.8.102:8000/users/auth/', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: 'Radek',
+        password: 'trello1234',
+      }),
+    }).then(response => response.json())
+      .then((res) => {
+        this.props.navigation.navigate('TableList', { token: res.token })
+      }).catch((err) => {
+        console.log(err)
+      });
+    //
   }
 
   register() {
