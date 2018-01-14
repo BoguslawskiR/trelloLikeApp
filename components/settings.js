@@ -16,16 +16,8 @@ export default class Header extends Component {
 
   render() {
     return (
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
-          <Icon
-            name='rowing' />
-        </TouchableOpacity>
-        <Text>{this.props.name}</Text>
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('Settings')}>
-          <Icon
-            name='menu' />
-        </TouchableOpacity>
+      <View>
+
       </View>
 
     );
@@ -34,13 +26,5 @@ export default class Header extends Component {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    height: 64,
-    width: '100%',
-    backgroundColor: '#fff',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexDirection: 'row',
-    elevation: 3,
-  }
+
 })

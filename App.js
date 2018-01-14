@@ -16,9 +16,9 @@ import Login from './components/login';
 import { StackNavigator, AppNavigator } from 'react-navigation';
 import Table from './components/table';
 import Register from './components/register';
-import TaskDetails from './components/taskdetails';
 import TableList from './components/tableList';
-
+import Settings from './components/settings';
+import TaskDetails from './components/taskdetails';
 
 export default class App extends Component<{}> {
   render() {
@@ -41,11 +41,14 @@ const ModalStack = StackNavigator({
   TableList: {
     screen: TableList
   },
-    TaskDetails: {
+  Settings: {
+    screen: Settings,
+  },
+  TaskDetails: {
     screen: TaskDetails
-    }
+  }
 },
   {
-    initialRouteName: 'TaskDetails',
+    initialRouteName: 'Login',
   }
 );
