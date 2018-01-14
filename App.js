@@ -9,7 +9,7 @@ import {
   Platform,
   StyleSheet,
   Text,
-  View
+  View,
 } from 'react-native';
 import Login from './components/login';
 
@@ -17,7 +17,8 @@ import { StackNavigator, AppNavigator } from 'react-navigation';
 import Table from './components/table';
 import Register from './components/register';
 import TableList from './components/tableList';
-
+import Settings from './components/settings';
+import TaskDetails from './components/taskdetails';
 
 export default class App extends Component<{}> {
   render() {
@@ -39,6 +40,12 @@ const ModalStack = StackNavigator({
   },
   TableList: {
     screen: TableList
+  },
+  Settings: {
+    screen: Settings,
+  },
+  TaskDetails: {
+    screen: TaskDetails
   }
 },
   {
