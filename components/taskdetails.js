@@ -1,60 +1,51 @@
 import React, { Component } from 'react';
 import {
-    View, Text, Button, StyleSheet, Image, DeviceEventEmitter, Platform, NativeModules, NativeEventEmitter, Alert
+    ScrollView, View, Text, Button, StyleSheet, Image, DeviceEventEmitter, Platform, NativeModules, NativeEventEmitter, Alert
 } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
 import { serverURL } from './shares';
+import { Dropdown } from 'react-native-material-dropdown';
 
 import * as _ from 'lodash';
 
 
 export default class TaskDetails extends Component {
-
+    lists = [];
+    users = [];
     state = {
+        team: [],
         task: {
-            id: 1,
-            name: 'pranie1',
-            description: "Write unittests",
-            priority: 4,
-            deadline: "2018-01-01T01:00:00Z",
-            finished: false,
-            performer_id: null,
-            list_id: 2,
+            performer_id: {
+                username: ''
+            },
             comments: [
                 {
                     id: 3,
-                    content: "Good",
-                    created: "2018-01-14T15:14:06.350595Z",
+                    content: "",
+                    created: "",
                     author: {
-                        username: "Magni"
-                    }
-                },
-                {
-                    id: 4,
-                    content: "Bad",
-                    created: "2018-01-14T15:15:06.350595Z",
-                    author: {
-                        username: "Radek"
+                        username: ""
                     }
                 }
-
             ],
         },
         newComments: ''
     };
 
+    tableId = this.props.navigation.state.params.tableId;
+    listsId = this.props.navigation.state.params.listId;
+    taskId = this.props.navigation.state.params.taskId;
+
     static navigationOptions = ({ navigation }) => ({
         header: null
     });
 
-    componentWillMount() {
-        let tableId = this.props.navigation.state.params.tableId;
-        let listsId = this.props.navigation.state.params.listId;
-        let taskId = this.props.navigation.state.params.taskId;
 
-        fetch(`${serverURL}/boards/${tableId}/lists/${listsId}/tasks/${taskId}`,
+    componentWillMount() {
+
+        fetch(`${serverURL}/boards/${this.tableId}/lists/${this.listsId}/tasks/${this.taskId}`,
             {
-                type: 'GET',
+                method: 'GET',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
@@ -64,18 +55,59 @@ export default class TaskDetails extends Component {
             .then((jsonTask) => {
                 let taskObj = jsonTask;
                 this.setState({ task: taskObj })
-            })
+            });
 
+        fetch(`${serverURL}/boards/${this.tableId}/team`,
+            {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `JWT ${this.props.navigation.state.params.token}`
+                }
+            }).then((res) => res.json())
+            .then((team) => {
+                this.state.team.push(team[0].user);
+                _.forEach(_.first(this.state.team), user => {
+                    this.users.push({ value: user.username });
+                });
 
-        console.log('test', this.props);
-        console.log('test', this.state);
+            });
+        _.forEach(this.props.navigation.state.params.lists, list => {
+            this.lists.push({
+                value: list.name,
+                id: list.id
+            });
+        });
+
     }
 
     render() {
 
         let { newComment } = this.state.newComments;
         return (
-            <View>
+            <ScrollView>
+                <Dropdown
+                    label="Lists"
+                    data={this.lists}
+                    onChangeText={(value, ind, data) => {
+                        const found = _.find(data, (ref) => ref.value === value);
+                        fetch(`${serverURL}/boards/${this.tableId}/lists/${this.listsId}/tasks/${this.taskId}/move/${found.id}`,
+                            {
+                                method: 'GET',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `JWT ${this.props.navigation.state.params.token}`
+                                }
+                            }).then((res) => res.json())
+                            .then((jsonTask) => {
+                                console.log(jsonTask);
+                                this.props.navigation.state.params.listId = found.id;
+                            });
+                    }}
+
+                />
                 <View style={styles.row}>
                     <Text>Deadline:</Text>
                     <Text> {this.state.task.deadline}</Text>
@@ -84,24 +116,43 @@ export default class TaskDetails extends Component {
                     <Text>Description:</Text>
                     <Text> {this.state.task.description}</Text>
                 </View>
-                {this.state.task.performer_id ?
+                {this.state.task.performer_id.username ?
                     <View style={styles.row}>
-                        <Text>Members:</Text>
-                        <Text> {this.state.task.performer_id}</Text>
+                        <Dropdown
+                            label=""
+                            data={this.users}
+                            onChangeText={(value, ind, data) => {
+                                const found = _.find(data, (ref) => ref.value === value);
+                                console.log(found);
+                                fetch(`${serverURL}/boards/${this.tableId}/lists/${this.listsId}/tasks/${this.taskId}/add_user/${value}`,
+                                    {
+                                        method: 'GET',
+                                        headers: {
+                                            'Accept': 'application/json',
+                                            'Content-Type': 'application/json',
+                                            'Authorization': `JWT ${this.props.navigation.state.params.token}`
+                                        }
+                                    }).then((res) => res.json())
+                                    .then((jsonTask) => {
+                                        console.log(jsonTask);
+                                        this.props.navigation.state.params.listId = found.id;
+                                    });
+                            }}
+                        />
                     </View> : null
                 }
+
                 <View>
                     <Text>Comments:</Text>
                     <TextField
                         label='Create new comment'
                         value={newComment}
                         onChangeText={(newComment) => this.setState({ newComment })}
-
                     />
                 </View>
-                <View style={styles.row}>
+                <View style={[styles.row, styles.column]}>
                     {
-                        this.state.task.comments.map(
+                        this.state.task.comments ? this.state.task.comments.map(
                             (comment) => (
                                 <View key={comment.id} style={styles.comment}>
                                     <Text >
@@ -109,31 +160,36 @@ export default class TaskDetails extends Component {
                                     </Text>
                                 </View>
                             )
-                        )
+                        ) : null
                     }
                 </View>
-                {/*<Text style={{ color: '#000' }}>Test</Text>*/}
-                {/*<Text>Test</Text>*/}
                 <Button title={'ADD'} onPress={this.addComment.bind(this)} />
 
-                {/*<Button title={'test'} onPress={*/}
-                {/*this.login.bind(this)*/}
-                {/*}></Button>*/}
-            </View>
+
+            </ScrollView>
         );
     }
 
     addComment() {
-        this.state.task.comments.push(
+
+        fetch(`${serverURL}/boards/${this.tableId}/lists/${this.listsId}/tasks/${this.taskId}/comments`,
             {
-                content: this.state.newComment,
-                author: {
-                    username: "Magni"
-                }
-            }
-        );
-        this.setState({});
-        console.log('add comment');
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `JWT ${this.props.navigation.state.params.token}`
+                },
+                body: JSON.stringify({
+                    content: this.state.newComment
+                })
+            }).then((response) => response.json())
+            .then((res) => {
+                this.state.task.comments.push(
+                    res
+                );
+                this.setState({})
+            });
         // this.props.navigation.navigation('Login')
     }
 }
@@ -149,6 +205,9 @@ const styles = StyleSheet.create(
         comment: {
             flexDirection: 'row',
             padding: 6
+        },
+        column: {
+            flexDirection: 'column'
         }
     }
 );

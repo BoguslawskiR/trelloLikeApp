@@ -16,6 +16,10 @@ export default class Table extends Component {
     header: <Header name={navigation.state.params.table.name} table={navigation.state.params.table} token={navigation.state.params.token} navigation={navigation}></Header>
   });
 
+  componentDidMount()
+  {
+    console.log('zrobiłem rzeczy')
+  }
   componentWillMount() {
     console.log(this.props);
 
@@ -58,6 +62,7 @@ export default class Table extends Component {
                 tableId: this.props.navigation.state.params.table.id,
                 listId: list.id,
                 taskId: task.id,
+                lists: this.state.lists
               })
             }}>
               <Text>{task.name}</Text>
