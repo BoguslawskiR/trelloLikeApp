@@ -3,6 +3,7 @@ import {
   View, Text, Button, StyleSheet, Image, DeviceEventEmitter, Platform, NativeModules, NativeEventEmitter, Alert
 } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
+import { serverURL } from './shares';
 
 import * as _ from 'lodash';
 
@@ -57,17 +58,21 @@ export default class Name extends Component {
   }
 
   register() {
-    fetch('https://mywebsite.com/endpoint/', {
+    fetch(`${serverURL}/users/register/`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        firstParam: 'yourValue',
-        secondParam: 'yourOtherValue',
+        username: this.state.name,
+        email: this.state.email,
+        password: this.state.password
       }),
+    }).then((res) => {
+      console.log(res);
+      this.props.navigation.navigate('Login')
     });
-    this.props.navigation.navigate('Login')
+
   }
 }

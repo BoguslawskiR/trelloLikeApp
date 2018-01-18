@@ -5,7 +5,6 @@ import {
 import { TextField } from 'react-native-material-textfield';
 import * as _ from 'lodash';
 import { Icon } from 'react-native-elements'
-import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 
 
 export default class Header extends Component {
@@ -15,14 +14,18 @@ export default class Header extends Component {
   }
 
   render() {
+    console.log(this.params);
     return (
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+        {this.props.back == false ? null : <TouchableOpacity onPress={() => {
+          DeviveEventEmitter.emit('backListener', {})
+          this.props.navigation.goBack()
+        }}>
           <Icon
-            name='rowing' />
-        </TouchableOpacity>
-        <Text>{this.props.name}</Text>
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('Settings')}>
+            name='keyboard-arrow-left' />
+        </TouchableOpacity>}
+        <Text style={styles.headerTitle}>{this.props.name}</Text>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('Settings', { table: this.props.table, token: this.props.navigation.state.params.token })}>
           <Icon
             name='menu' />
         </TouchableOpacity>
@@ -42,5 +45,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     elevation: 3,
+    padding: 16
+  },
+  headerTitle: {
+    fontSize: 18
   }
 })

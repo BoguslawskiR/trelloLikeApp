@@ -19,6 +19,7 @@ import Register from './components/register';
 import TableList from './components/tableList';
 import Settings from './components/settings';
 import TaskDetails from './components/taskdetails';
+import CreateTask from './components/createTask';
 
 export default class App extends Component<{}> {
   render() {
@@ -46,6 +47,9 @@ const ModalStack = StackNavigator({
   },
   TaskDetails: {
     screen: TaskDetails
+  },
+  CreateTask: {
+    screen: CreateTask
   }
 },
   {

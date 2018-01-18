@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import {
-  View, Text, Button, StyleSheet, Image, DeviceEventEmitter, Platform, NativeModules, NativeEventEmitter, Alert, TouchableOpacity
+  View, Text, Button, StyleSheet, Image, ScrollView, DeviceEventEmitter, Platform, NativeModules, NativeEventEmitter, Alert, TouchableOpacity
 } from 'react-native';
 import * as _ from 'lodash';
 import Header from './header';
+import { serverURL } from './shares';
 export default class TableList extends Component {
 
   state = {
@@ -11,14 +12,14 @@ export default class TableList extends Component {
   }
 
   static navigationOptions = ({ navigation }) => ({
-    header: null
+    header: <Header back="false" name="Choose board" token={navigation.state.params.token} navigation={navigation}></Header>
   });
 
 
 
   componentWillMount() {
     console.log(this.props.token);
-    fetch('http://192.168.8.102:8000/boards/', {
+    fetch(`${serverURL}/boards/`, {
       type: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -28,6 +29,7 @@ export default class TableList extends Component {
     }).then((res) => {
       return res.json()
     }).then((res) => {
+      console.log(this.res);
       let tables = res;
       this.setState({ tables });
       console.log(this.state.tables);
@@ -36,17 +38,17 @@ export default class TableList extends Component {
 
   render() {
     return (
-      <View>
+      <ScrollView>
         {
-          this.state.tables ? this.state.tables.map((table) => (
-            <TouchableOpacity style={styles.item} onPress={() => this.props.navigation.navigate('Table', { table: table, token: this.props.navigation.state.params.token })
+          this.state.tables.length > 0 ? this.state.tables.map((table) => (
+            <TouchableOpacity key={table.id} style={styles.item} onPress={() => this.props.navigation.navigate('Table', { table: table, token: this.props.navigation.state.params.token })
             }>
               <Text style={styles.itemName}>{table.name}</Text>
             </TouchableOpacity>
           )
           ) : null
         }
-      </View>
+      </ScrollView>
     );
   }
 
@@ -59,8 +61,8 @@ export default class TableList extends Component {
 const styles = StyleSheet.create({
   item: {
     padding: 16,
-    borderColor: 'rgba(0,0,0,0.1)',
-    borderWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+    borderBottomWidth: 1,
   },
   itemName: {
     fontSize: 22

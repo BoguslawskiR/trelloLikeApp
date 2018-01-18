@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import {
-  View, Text, Button, StyleSheet, Image, DeviceEventEmitter, Platform, NativeModules, NativeEventEmitter, Alert, TouchableOpacity
+  View, Text, Button, StyleSheet, Image, DeviceEventEmitter, Platform, NativeModules, NativeEventEmitter, Alert, TouchableOpacity, ScrollView
 } from 'react-native';
 import * as _ from 'lodash';
 import Header from './header';
+import ActionButton from 'react-native-action-button';
+import { serverURL } from './shares';
 export default class Table extends Component {
 
   state = {
@@ -11,31 +13,29 @@ export default class Table extends Component {
   }
 
   static navigationOptions = ({ navigation }) => ({
-    header: <Header name={navigation.state.params.table.name} navigation={navigation}></Header>
+    header: <Header name={navigation.state.params.table.name} table={navigation.state.params.table} token={navigation.state.params.token} navigation={navigation}></Header>
   });
 
   componentWillMount() {
     console.log(this.props);
 
-    fetch(`http://192.168.8.102:8000/boards/${this.props.navigation.state.params.table.id}/lists`, {
-      type: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `JWT ${this.props.navigation.state.params.token}`
-      },
-    }).then((res) => res.json())
-      .then((jsonLists) => {
-        let lists = jsonLists;
-        this.setState({ lists: lists });
-        console.log(this.state.lists)
-      })
+    DeviceEventEmitter.addListener('backListener', (e) => {
+      this.fetchData();
+    })
+    this.fetchData();
   }
 
   render() {
     return (
-      <View>
-        {this.lists()}
+      <View style={{ position: 'relative' }}>
+        <ActionButton
+          style={styles.fab}
+          buttonColor="rgba(231,76,60,1)"
+          onPress={() => this.props.navigation.navigate('CreateTask', { table: this.props.navigation.state.params.table, token: this.props.navigation.state.params.token, lists: this.state.lists })}
+        />
+        <ScrollView>
+          {this.lists()}
+        </ScrollView>
       </View>
     );
   }
@@ -67,6 +67,22 @@ export default class Table extends Component {
       ))
     )
   }
+
+  fetchData() {
+    fetch(`${serverURL}/boards/${this.props.navigation.state.params.table.id}/lists`, {
+      type: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `JWT ${this.props.navigation.state.params.token}`
+      },
+    }).then((res) => res.json())
+      .then((jsonLists) => {
+        let lists = jsonLists;
+        this.setState({ lists: lists });
+        console.log(this.state.lists)
+      })
+  }
 }
 
 const styles = StyleSheet.create({
@@ -82,5 +98,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#2196F3',
     margin: 16,
+  },
+  fab: {
+    zIndex: 100
   }
 })

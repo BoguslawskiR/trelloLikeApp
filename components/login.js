@@ -3,7 +3,7 @@ import {
   View, Text, Button, StyleSheet, Image, DeviceEventEmitter, Platform, NativeModules, NativeEventEmitter, Alert
 } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
-
+import { serverURL } from './shares';
 import * as _ from 'lodash';
 import Header from './header';
 export default class Login extends Component {
@@ -53,19 +53,22 @@ export default class Login extends Component {
 
   login() {
     console.log('TEST');
-    fetch('http://192.168.8.102:8000/users/auth/', {
+    fetch(`${serverURL}/users/auth/`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        username: 'Radek',
-        password: 'trello1234',
+        username: this.state.email,
+        password: this.state.password,
       }),
     }).then(response => response.json())
       .then((res) => {
-        this.props.navigation.navigate('TableList', { token: res.token })
+        if (res.token) {
+          this.props.navigation.navigate('TableList', { token: res.token })
+        }
+
       }).catch((err) => {
         console.log(err)
       });

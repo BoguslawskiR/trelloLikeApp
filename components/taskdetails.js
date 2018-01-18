@@ -1,6 +1,3 @@
-/**
- * Created by magni on 14.01.18.
- */
 import React, { Component } from 'react';
 import {
     View, Text, Button, StyleSheet, Image, DeviceEventEmitter, Platform, NativeModules, NativeEventEmitter, Alert
@@ -64,10 +61,10 @@ export default class TaskDetails extends Component {
                     'Authorization': `JWT ${this.props.navigation.state.params.token}`
                 }
             }).then((res) => res.json())
-                .then((jsonTask) => {
-                    let taskObj = jsonTask;
-                    this.setState({task: taskObj})
-                })
+            .then((jsonTask) => {
+                let taskObj = jsonTask;
+                this.setState({ task: taskObj })
+            })
 
 
         console.log('test', this.props);
@@ -87,7 +84,7 @@ export default class TaskDetails extends Component {
                     <Text>Description:</Text>
                     <Text> {this.state.task.description}</Text>
                 </View>
-                { this.state.task.performer_id ?
+                {this.state.task.performer_id ?
                     <View style={styles.row}>
                         <Text>Members:</Text>
                         <Text> {this.state.task.performer_id}</Text>
@@ -120,7 +117,7 @@ export default class TaskDetails extends Component {
                 <Button title={'ADD'} onPress={this.addComment.bind(this)} />
 
                 {/*<Button title={'test'} onPress={*/}
-                    {/*this.login.bind(this)*/}
+                {/*this.login.bind(this)*/}
                 {/*}></Button>*/}
             </View>
         );
