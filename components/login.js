@@ -10,7 +10,8 @@ export default class Login extends Component {
 
   state = {
     email: '',
-    password: ''
+    password: '',
+    loading: false,
   };
 
   static navigationOptions = ({ navigation }) => ({
@@ -31,7 +32,7 @@ export default class Login extends Component {
       }}>
         <View style={{ width: 300 }}>
           <TextField
-            label='Email'
+            label='Username'
             value={email}
             onChangeText={(email) => this.setState({ email })}
           />
@@ -44,7 +45,7 @@ export default class Login extends Component {
           />
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: 300, marginTop: 16 }}>
-          <Button title={'Login'} onPress={this.login.bind(this)} />
+          <Button disabled={this.state.loading} title={'Login'} onPress={this.login.bind(this)} />
           <Button title={'Register'} onPress={this.register.bind(this)} />
         </View>
       </View>
@@ -52,7 +53,7 @@ export default class Login extends Component {
   }
 
   login() {
-    console.log('TEST');
+    this.setState({ loading: true })
     fetch(`${serverURL}/users/auth/`, {
       method: 'POST',
       headers: {
@@ -68,9 +69,9 @@ export default class Login extends Component {
         if (res.token) {
           this.props.navigation.navigate('TableList', { token: res.token })
         }
-
+        this.setState({ loading: false })
       }).catch((err) => {
-        console.log(err)
+        this.setState({ loading: false })
       });
     //
   }

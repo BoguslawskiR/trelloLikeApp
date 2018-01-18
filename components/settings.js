@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  View, Text, Button, StyleSheet, Image, DeviceEventEmitter, Platform, NativeModules, NativeEventEmitter, Alert, TouchableOpacity
+  View, Text, Button, StyleSheet, Image, DeviceEventEmitter, Platform, NativeModules, NativeEventEmitter, Alert, TouchableOpacity, ScrollView
 } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
 import * as _ from 'lodash';
@@ -19,7 +19,7 @@ export default class Settings extends Component {
   static navigationOptions = ({ navigation }) => {
     console.log(navigation);
     return ({
-      header: <Header name={navigation.state.params.table.name} table={navigation.state.params.table} token={navigation.state.params.token} navigation={navigation}></Header>
+      header: <Header name={navigation.state.params.table ? navigation.state.params.table.name : 'Settings'} table={navigation.state.params.table} token={navigation.state.params.token} navigation={navigation}></Header>
     })
   };
 
@@ -31,31 +31,53 @@ export default class Settings extends Component {
     let { username, tableName, listName } = this.state;
 
     return (
-      <View>
+
+      this.props.navigation.state.params.table ? <ScrollView style={styles.view}>
         <TextField
           label='Username'
           value={username}
           onChangeText={(username) => this.setState({ username })}
         />
-        <View>
-          <Button title={'Add member'} onPress={() => this.addMember()} />
-          <Button title={'Remove member'} onPress={() => this.addMember()} />
+        <View style={styles.row}>
+          <View style={styles.button}>
+            <Button style={styles.button} title={'Add member'} onPress={() => this.addMember()} />
+          </View>
+          <View style={styles.button}>
+            <Button style={styles.button} title={'Remove member'} onPress={() => this.addMember()} />
+          </View>
         </View>
         <TextField
           label='Table Name'
           value={tableName}
           onChangeText={(tableName) => this.setState({ tableName })}
         />
-        <Button title={'Add desk'} onPress={() => this.addDesk(tableName)} />
+        <View style={styles.button} >
+          <Button style={styles.button} title={'Add desk'} onPress={() => this.addDesk(tableName)} />
+        </View>
         <TextField
           label='List Name'
           value={listName}
           onChangeText={(listName) => this.setState({ listName })}
         />
-        <Button title={'Add list'} onPress={() => this.addList(listName)} />
-        <Button title={'Logout'} onPress={() => this.props.navigation.navigate('Login')} />
+        <View style={styles.button}>
+          <Button style={styles.button} title={'Add list'} onPress={() => this.addList(listName)} />
+        </View>
+        <View style={styles.button}>
+          <Button style={styles.button} title={'Logout'} onPress={() => this.props.navigation.navigate('Login')} />
+        </View>
 
-      </View>
+      </ScrollView> :
+        <View style={styles.view}>
+          <TextField
+            label='Table Name'
+            value={tableName}
+            onChangeText={(tableName) => this.setState({ tableName })}
+          />
+          <View style={styles.button}>
+            <Button style={styles.button} title={'Add desk'} onPress={() => this.addDesk(tableName)} />
+          </View>
+        </View>
+
 
     );
   }
@@ -69,7 +91,7 @@ export default class Settings extends Component {
         'Content-Type': 'application/json',
         'Authorization': `JWT ${this.props.navigation.state.params.token}`
       }
-    }).then((res) => console.log(res));
+    }).then((res) => this.setState({ username: '' }));
   }
 
   addDesk(tableName) {
@@ -112,5 +134,17 @@ export default class Settings extends Component {
 }
 
 const styles = StyleSheet.create({
-
+  button: {
+    width: 140,
+    marginTop: 8,
+    marginBottom: 8
+  },
+  view: {
+    paddingLeft: 16,
+    paddingRight: 16
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  }
 })

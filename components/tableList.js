@@ -12,28 +12,16 @@ export default class TableList extends Component {
   }
 
   static navigationOptions = ({ navigation }) => ({
-    header: <Header back="false" name="Choose board" token={navigation.state.params.token} navigation={navigation}></Header>
+    header: <Header back={false} name="Choose board" token={navigation.state.params.token} navigation={navigation}></Header>
   });
 
 
 
   componentWillMount() {
     console.log(this.props.token);
-    fetch(`${serverURL}/boards/`, {
-      type: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `JWT ${this.props.navigation.state.params.token}`
-      },
-    }).then((res) => {
-      return res.json()
-    }).then((res) => {
-      console.log(this.res);
-      let tables = res;
-      this.setState({ tables });
-      console.log(this.state.tables);
-    })
+    this.fetch()
+
+    DeviceEventEmitter.addListener('backListner', () => this.fetch())
   }
 
   render() {
@@ -55,6 +43,25 @@ export default class TableList extends Component {
   chooseTable(id) {
     console.log(this.props, id)
     this.props.navigation.navigate('Table', { tableId: id, token: this.props.navigation.state.params.token })
+  }
+
+  fetch() {
+    fetch(`${serverURL}/boards/`, {
+      type: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `JWT ${this.props.navigation.state.params.token}`
+      },
+    }).then((res) => {
+      console.log(res);
+      return res.json()
+    }).then((res) => {
+      console.log(this.res);
+      let tables = res;
+      this.setState({ tables });
+      console.log(this.state.tables);
+    })
   }
 }
 

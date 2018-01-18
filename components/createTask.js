@@ -63,7 +63,7 @@ export default class CreateTask extends Component {
           onChangeText={(description) => this.setState({ description })}
         />
         <DatePicker
-          style={{ width: 200 }}
+          style={{ width: 150, margin: 0, marginBottom: 16, marginTop: 8 }}
           date={deadline}
           mode="date"
           placeholder="Deadline"
@@ -76,13 +76,22 @@ export default class CreateTask extends Component {
               position: 'absolute',
               left: 0,
               top: 4,
-              marginLeft: 0
+              marginLeft: 0,
+              opacity: 0
             },
             dateInput: {
-              marginLeft: 36
+              marginLeft: 0,
+              borderWidth: 0,
+              borderBottomWidth: 1,
+              borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+              paddingLeft: 16
             }
           }}
-          onDateChange={(deadline) => { this.setState({ deadline }) }}
+          onDateChange={(deadline) => {
+            this.setState({ deadline })
+          }}
         />
         <Button title="Add task" onPress={() => this.add()} />
       </View>
@@ -102,12 +111,13 @@ export default class CreateTask extends Component {
       body: JSON.stringify({
         name: this.state.name,
         description: this.state.description,
-        deadline: this.state.deadline,
+        deadline: new Date(this.state.deadline),
         priority: 3
       }),
     }).then((res) => {
-      DeviveEventEmitter.emit('backListener', {});
-      this.props.navigation.navigate('Table');
+      console.log(res)
+      DeviceEventEmitter.emit('backListener', {});
+      this.props.navigation.goBack();
     }).catch((err) => console.log(err));
   }
 

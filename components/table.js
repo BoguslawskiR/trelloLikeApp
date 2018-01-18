@@ -16,8 +16,7 @@ export default class Table extends Component {
     header: <Header name={navigation.state.params.table.name} table={navigation.state.params.table} token={navigation.state.params.token} navigation={navigation}></Header>
   });
 
-  componentDidMount()
-  {
+  componentDidMount() {
     console.log('zrobiłem rzeczy')
   }
   componentWillMount() {
@@ -31,9 +30,10 @@ export default class Table extends Component {
 
   render() {
     return (
-      <View style={{ position: 'relative' }}>
+      <View style={{ flex: 1 }}>
         <ActionButton
           style={styles.fab}
+          // title={'test'}
           buttonColor="rgba(231,76,60,1)"
           onPress={() => this.props.navigation.navigate('CreateTask', { table: this.props.navigation.state.params.table, token: this.props.navigation.state.params.token, lists: this.state.lists })}
         />
@@ -41,6 +41,10 @@ export default class Table extends Component {
           {this.lists()}
         </ScrollView>
       </View>
+      // <View style={{ position: 'relative' }}>
+
+      //   
+      // </View>
     );
   }
 
@@ -62,7 +66,8 @@ export default class Table extends Component {
                 tableId: this.props.navigation.state.params.table.id,
                 listId: list.id,
                 taskId: task.id,
-                lists: this.state.lists
+                lists: this.state.lists,
+                table: this.props.navigation.state.params.table
               })
             }}>
               <Text>{task.name}</Text>

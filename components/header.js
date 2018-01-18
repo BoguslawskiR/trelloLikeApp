@@ -17,8 +17,8 @@ export default class Header extends Component {
     console.log(this.params);
     return (
       <View style={styles.header}>
-        {this.props.back == false ? null : <TouchableOpacity onPress={() => {
-          DeviveEventEmitter.emit('backListener', {})
+        {this.props.back == false ? <View></View> : <TouchableOpacity onPress={() => {
+          DeviceEventEmitter.emit('backListener', {})
           this.props.navigation.goBack()
         }}>
           <Icon
